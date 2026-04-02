@@ -3,160 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dispatch Lab</title>
+    <title>Dispatch Project</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="page-shell">
-      <header class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">IFP School / Real Options / Dispatch Project</p>
-          <h1>Dispatch Lab</h1>
-          <p class="hero-text">
-            Un mini site local pour piloter le modele de dispatch, modifier les hypotheses, recalculer tout en direct
-            et analyser la partie stochastique avec Monte Carlo.
+    <div class="page">
+      <header class="masthead panel">
+        <div class="masthead-copy">
+          <p class="eyebrow">IFP School / Real Options / Projet 3</p>
+          <h1>Dispatch Project</h1>
+          <p class="lede">
+            Presentation locale du modele de dispatch, structuree par scenario. Le cas de base, les trois extensions
+            et les donnees d'entree sont presentes comme un mini rapport interactif plutot qu'un dashboard.
           </p>
-          <div class="hero-actions">
-            <button id="run-model" class="button button-primary">Run full model</button>
-            <button id="reset-defaults" class="button button-secondary">Reset defaults</button>
-            <button id="export-json" class="button button-ghost">Export scenario JSON</button>
-          </div>
         </div>
-        <div class="hero-panel">
-          <div class="hero-stat">
-            <span class="hero-stat-label">Mode</span>
-            <strong>Static HTML / CSS / JS</strong>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-label">Core</span>
-            <strong>DP + stochastic policy + Monte Carlo</strong>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-label">Target</span>
-            <strong>Local now, easy hosting later</strong>
-          </div>
+        <div class="masthead-actions">
+          <button id="run-model" class="button button-primary">Recalculer</button>
+          <button id="reset-defaults" class="button button-secondary">Valeurs du projet</button>
+          <button id="export-json" class="button button-secondary">Exporter JSON</button>
         </div>
       </header>
 
-      <main class="layout">
-        <aside class="sidebar">
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Controls</p>
-              <h2>Scenario setup</h2>
-            </div>
-            <div class="parameter-grid" id="parameter-grid"></div>
-          </section>
+      <section class="summary-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <p class="section-kicker">Validation</p>
+            <h2>Controle 24 heures</h2>
+          </div>
+          <div id="validation-summary"></div>
+        </article>
 
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Validation</p>
-              <h2>24h benchmark</h2>
-            </div>
-            <div id="validation-card" class="validation-card"></div>
-          </section>
+        <article class="panel">
+          <div class="panel-head">
+            <p class="section-kicker">Etat</p>
+            <h2>Diagnostic des entrees</h2>
+          </div>
+          <div id="diagnostics"></div>
+        </article>
+      </section>
 
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Diagnostics</p>
-              <h2>Input checks</h2>
-            </div>
-            <div id="diagnostics"></div>
-          </section>
-        </aside>
+      <section class="panel">
+        <div class="panel-head">
+          <p class="section-kicker">Vue d'ensemble</p>
+          <h2>Synthese des scenarios</h2>
+        </div>
+        <div id="overview-cards" class="overview-cards"></div>
+        <div class="figure-card">
+          <div class="figure-head">
+            <h3>Comparaison des profits</h3>
+            <p>Le graphe compare les profits optimaux des cas et extensions.</p>
+          </div>
+          <canvas id="profit-chart" width="960" height="320" aria-label="Profit comparison chart"></canvas>
+        </div>
+        <div id="overview-table"></div>
+      </section>
 
-        <section class="content">
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Results</p>
-              <h2>Case comparison</h2>
-            </div>
-            <div id="case-cards" class="case-cards"></div>
-            <div id="comparison-table"></div>
-          </section>
+      <section class="panel">
+        <div class="panel-head">
+          <p class="section-kicker">Presentation</p>
+          <h2>Par scenario</h2>
+        </div>
 
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Story</p>
-              <h2>Schedules</h2>
-            </div>
-            <div class="schedule-wrap" id="schedule-wrap"></div>
-          </section>
+        <nav class="tab-bar" aria-label="Scenarios">
+          <button class="tab-button is-active" data-tab="base">Probleme de base</button>
+          <button class="tab-button" data-tab="ext1">Extension 1</button>
+          <button class="tab-button" data-tab="ext2">Extension 2</button>
+          <button class="tab-button" data-tab="ext3">Extension 3</button>
+          <button class="tab-button" data-tab="inputs">Donnees & reglages</button>
+        </nav>
 
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Risk</p>
-              <h2>Monte Carlo on Sunday uncertainty</h2>
-            </div>
-            <div id="mc-summary" class="mc-summary"></div>
-            <canvas id="mc-chart" width="960" height="320" aria-label="Monte Carlo histogram"></canvas>
-          </section>
-
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Plots</p>
-              <h2>Model graphs</h2>
-            </div>
-            <div class="graph-stack">
-              <div class="graph-card">
-                <h3>Profit comparison</h3>
-                <canvas id="profit-chart" width="960" height="320" aria-label="Profit comparison chart"></canvas>
-              </div>
-              <div class="graph-card">
-                <h3>Margins and optimal base schedule</h3>
-                <canvas id="margins-chart" width="960" height="320" aria-label="Margins chart"></canvas>
-              </div>
-              <div class="graph-card">
-                <h3>Base value functions</h3>
-                <canvas id="values-chart" width="960" height="320" aria-label="Value functions chart"></canvas>
-              </div>
-              <div class="graph-card">
-                <h3>Extension 2 cumulative production</h3>
-                <canvas id="cum-chart" width="960" height="320" aria-label="Cumulative production chart"></canvas>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Inputs</p>
-              <h2>Editable data tables</h2>
-            </div>
-            <div class="editor-stack">
-              <details open class="editor-card">
-                <summary>Margins by hour and day</summary>
-                <div id="margins-editor"></div>
-              </details>
-              <details class="editor-card">
-                <summary>Deterministic demands by hour and day</summary>
-                <div id="demands-editor"></div>
-              </details>
-              <details class="editor-card">
-                <summary>Startup costs by hour and day</summary>
-                <div id="startups-editor"></div>
-              </details>
-              <details class="editor-card">
-                <summary>Sunday stochastic demand scenarios</summary>
-                <div id="stochastic-editor"></div>
-              </details>
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-head">
-              <p class="section-kicker">Deep dive</p>
-              <h2>Base case tables</h2>
-            </div>
-            <div class="table-switcher">
-              <button class="mini-toggle is-active" data-view="values-s0">V_t(s=0)</button>
-              <button class="mini-toggle" data-view="values-s1">V_t(s=1)</button>
-              <button class="mini-toggle" data-view="actions-s0">x_t(s=0)</button>
-              <button class="mini-toggle" data-view="actions-s1">x_t(s=1)</button>
-            </div>
-            <div id="matrix-view"></div>
-          </section>
-        </section>
-      </main>
+        <div id="tab-content" class="tab-content"></div>
+      </section>
     </div>
 
     <script src="./default-data.js"></script>
