@@ -94,7 +94,7 @@ def load_24h_validation(filepath="Project3code_Student.xlsm"):
         ref_x_s0[i] = float(df.iloc[i + 1, 6]) if pd.notna(df.iloc[i + 1, 6]) else 0
         ref_x_s1[i] = float(df.iloc[i + 1, 7]) if pd.notna(df.iloc[i + 1, 7]) else 0
         ref_V_s0[i] = float(df.iloc[i + 1, 8]) if pd.notna(df.iloc[i + 1, 8]) else 0
-        ref_V_s1[i] = float(df.iloc[i + 1, 9]) if pd.notna(df.iloc[i + 1, 9]) else 0
+        ref_V_s1[i] = float(df.iloc[i + 1, 9]) if pd.notna(df.iloc[i + 1, 9]) else np.nan
 
     return margins_24, demands_24, startups_24, ref_V_s0, ref_V_s1, ref_x_s0, ref_x_s1
 
@@ -126,8 +126,10 @@ def solve_base_dp(margins, demands, startups):
     X = np.zeros((T, 2), dtype=int)  # décisions : 0, 1, ou -1
 
     # --- Condition terminale (t = T, i.e. après la dernière heure) ---
-    V[T][0] = 0.0         # éteinte à la fin : OK
-    V[T][1] = -1e15        # allumée à la fin : interdit (on met -∞ en pratique)
+    # Le cas 24h de référence suppose qu'après l'horizon, la valeur de continuation
+    # est nulle quel que soit l'état; on peut donc s'éteindre sans pénalité à T+1.
+    V[T][0] = 0.0
+    V[T][1] = 0.0
 
     # --- Boucle rétrograde : de t = T-1 à t = 0 ---
     for t in range(T - 1, -1, -1):
